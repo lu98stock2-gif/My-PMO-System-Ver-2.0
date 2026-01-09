@@ -194,8 +194,8 @@ const Dashboard: React.FC = () => {
       {/* Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: 'ACTUAL HOURS (MONTH)', value: monthTotalHours, unit: 'Hr', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', color: 'blue' },
-          { label: 'ESTIMATED (THIS MONTH)', value: Math.round(totalEstimatedInMonth), unit: 'Hr', icon: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z', color: 'emerald' },
+          { label: 'ACTUAL HOURS (MONTH)', value: monthTotalHours, unit: 'HR', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', color: 'blue' },
+          { label: 'ESTIMATED (THIS MONTH)', value: Math.round(totalEstimatedInMonth), unit: 'HR', icon: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z', color: 'emerald' },
           { label: 'DELIVERABLES PRODUCED', value: deliverablesThisMonth.length, unit: '', icon: 'M13 10V3L4 14h7v7l9-11h-7z', color: 'purple' },
         ].map((item, idx) => (
           <div key={idx} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300">

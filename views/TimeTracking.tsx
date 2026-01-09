@@ -331,7 +331,7 @@ const TimeTracking: React.FC = () => {
                  </div>
                  <div className="flex items-center space-x-6 shrink-0">
                    <div className="text-right">
-                     <p className="text-5xl font-black text-slate-900 tracking-tighter">{e.hours}<span className="text-lg text-slate-300 font-black ml-1">Hr</span></p>
+                     <p className="text-5xl font-black text-slate-900 tracking-tighter">{e.hours}<span className="text-lg text-slate-300 font-black ml-4">HR</span></p>
                    </div>
                    <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all">
                       <button 
@@ -363,7 +363,7 @@ const TimeTracking: React.FC = () => {
             <p className="text-[10px] font-black text-slate-400 tracking-[0.25em] uppercase mb-1">Total Duration</p>
             <p className="text-7xl font-black text-slate-900 tracking-tighter">
               {dayTotal}
-              <span className="text-2xl text-slate-300 font-black ml-4 tracking-normal">Hr</span>
+              <span className="text-2xl text-slate-300 font-black ml-4 tracking-normal">HR</span>
             </p>
           </div>
 

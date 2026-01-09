@@ -299,7 +299,7 @@ const Projects: React.FC = () => {
 
                     {p.estimatedHours && (
                       <div className="flex items-center text-[10px] font-black text-blue-600 bg-blue-50 w-fit px-2 py-1 rounded-lg shadow-xs border border-blue-100">
-                        EST: {p.estimatedHours} Hr
+                        EST: {p.estimatedHours} HR
                       </div>
                     )}
                   </div>
