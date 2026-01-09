@@ -1,5 +1,5 @@
 
-import { Project, Estimate, TimeEntry, MonthlyReport } from './types';
+import { Project, Estimate, TimeEntry, MonthlyReport } from './types.ts';
 
 const STORAGE_KEYS = {
   PROJECTS: 'pm_projects',
@@ -74,8 +74,14 @@ export const DB = {
 
   // Reports
   getReports: (): MonthlyReport[] => get<MonthlyReport>(STORAGE_KEYS.REPORTS),
+  // Fix: Completed truncated function and corrected property access to REPORTS
   saveReport: (report: MonthlyReport) => {
     const list = DB.getReports();
     save(STORAGE_KEYS.REPORTS, [...list, report]);
+  },
+  // Fix: Added missing deleteReport method to complete the DB service
+  deleteReport: (id: string) => {
+    const list = DB.getReports().filter(r => r.id !== id);
+    save(STORAGE_KEYS.REPORTS, list);
   },
 };
