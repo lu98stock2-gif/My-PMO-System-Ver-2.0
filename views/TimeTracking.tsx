@@ -191,7 +191,7 @@ const TimeTracking: React.FC = () => {
             </button>
             <div className="mx-6 flex items-center space-x-3 group cursor-pointer" onClick={() => setShowCalendar(!showCalendar)}>
               <div className="p-2 bg-blue-50 rounded-xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg>
               </div>
               <span className="font-black text-slate-900 tracking-tight text-lg">{selectedDate}</span>
             </div>
@@ -331,7 +331,7 @@ const TimeTracking: React.FC = () => {
                  </div>
                  <div className="flex items-center space-x-6 shrink-0">
                    <div className="text-right">
-                     <p className="text-5xl font-black text-slate-900 tracking-tighter">{e.hours}<span className="text-lg text-slate-300 font-black ml-4">HR</span></p>
+                     <p className="text-5xl font-black text-slate-900 tracking-tighter">{e.hours}<span className="text-lg text-slate-300 font-black ml-2">h</span></p>
                    </div>
                    <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all">
                       <button 
@@ -363,7 +363,7 @@ const TimeTracking: React.FC = () => {
             <p className="text-[10px] font-black text-slate-400 tracking-[0.25em] uppercase mb-1">Total Duration</p>
             <p className="text-7xl font-black text-slate-900 tracking-tighter">
               {dayTotal}
-              <span className="text-2xl text-slate-300 font-black ml-4 tracking-normal">HR</span>
+              <span className="text-2xl text-slate-300 font-black ml-4 tracking-normal">h</span>
             </p>
           </div>
 
@@ -381,7 +381,6 @@ const TimeTracking: React.FC = () => {
             <p className="text-[10px] text-slate-300 mt-4 text-center font-black tracking-widest uppercase">Autosave Active</p>
           </div>
 
-          {/* Daily Distribution Chart */}
           <div className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm flex flex-col items-center">
             <h3 className="text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase mb-6 flex items-center">
                <span className="w-1.5 h-4 bg-purple-500 rounded-full mr-2"></span>

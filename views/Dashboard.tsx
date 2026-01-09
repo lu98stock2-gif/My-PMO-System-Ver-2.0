@@ -25,26 +25,17 @@ const Dashboard: React.FC = () => {
     return filteredEntries.filter(e => e.deliverable && e.deliverable.trim() !== "");
   }, [filteredEntries]);
 
-  // Updated total estimated logic: 
-  // Prioritizes project-level estimatedHours if the project is active during selectedMonth.
-  // Falls back to WBS Estimates if no project-level estimation is set.
   const totalEstimatedInMonth = useMemo(() => {
-    // 1. Projects that overlap with the selected month
     const activeProjectsThisMonth = projects.filter(p => {
-      // Check if project is active in the selected month
-      // Simple check: p.startDate or p.endDate matches selectedMonth or falls within it
       return p.startDate.startsWith(selectedMonth) || p.endDate.startsWith(selectedMonth) || (p.startDate < selectedMonth && p.endDate > selectedMonth);
     });
 
     const projectLevelSum = activeProjectsThisMonth.reduce((sum, p) => sum + (p.estimatedHours || 0), 0);
     
-    // 2. Add WBS estimates created this month for standalone or other tracking
     const wbsSum = estimates
       .filter(est => est.createdAt.startsWith(selectedMonth))
       .reduce((sum, e) => sum + (e.totalHours * (1 + e.bufferPercent / 100)), 0);
 
-    // If projectLevelSum exists, we use that for projects, but WBS might be more specific.
-    // To satisfy the user request simply: reflect what was registered in Projects.
     return projectLevelSum > 0 ? projectLevelSum : wbsSum;
   }, [projects, estimates, selectedMonth]);
 
@@ -52,7 +43,6 @@ const Dashboard: React.FC = () => {
     return projects.map(p => {
       const actual = filteredEntries.filter(e => e.projectId === p.id).reduce((s, e) => s + e.hours, 0);
       
-      // Use project-level estimatedHours as primary, WBS as secondary
       let est = p.estimatedHours || 0;
       if (est === 0) {
         est = estimates
@@ -92,7 +82,6 @@ const Dashboard: React.FC = () => {
     return projects.filter(p => p.status === 'On-going');
   }, [projects]);
 
-  // Robust Month navigation logic
   const adjustMonth = (delta: number) => {
     const [year, month] = selectedMonth.split('-').map(Number);
     const date = new Date(year, month - 1 + delta, 1);
@@ -194,8 +183,8 @@ const Dashboard: React.FC = () => {
       {/* Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: 'ACTUAL HOURS (MONTH)', value: monthTotalHours, unit: 'HR', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', color: 'blue' },
-          { label: 'ESTIMATED (THIS MONTH)', value: Math.round(totalEstimatedInMonth), unit: 'HR', icon: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z', color: 'emerald' },
+          { label: 'ACTUAL HOURS (MONTH)', value: monthTotalHours, unit: 'h', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', color: 'blue' },
+          { label: 'ESTIMATED (THIS MONTH)', value: Math.round(totalEstimatedInMonth), unit: 'h', icon: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z', color: 'emerald' },
           { label: 'DELIVERABLES PRODUCED', value: deliverablesThisMonth.length, unit: '', icon: 'M13 10V3L4 14h7v7l9-11h-7z', color: 'purple' },
         ].map((item, idx) => (
           <div key={idx} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300">
@@ -327,7 +316,6 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Monthly Deliverables List */}
       <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
         <h3 className="text-xl font-bold text-slate-900 mb-8 flex items-center">
           <span className="w-1.5 h-6 bg-blue-600 rounded-full mr-3"></span>

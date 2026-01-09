@@ -118,8 +118,6 @@ const Estimator: React.FC = () => {
     return result.items.reduce((acc, item, originalIndex) => {
       const phase = item.phase || 'General';
       if (!acc[phase]) acc[phase] = [];
-      // Cast to any because result.items don't have 'id', but groupedItems type expects it.
-      // This is safe for rendering and updateItem because we use originalIndex for updates.
       acc[phase].push({ ...item, originalIndex } as any);
       return acc;
     }, defaultRecord);
@@ -256,7 +254,6 @@ const Estimator: React.FC = () => {
               </div>
 
               <div className="space-y-12">
-                {/* Fix TypeScript unknown errors in groupedItems.map by adding type assertions for Object.entries */}
                 {(Object.entries(groupedItems) as [string, (EstimateItem & { originalIndex: number })[]][]).map(([phase, items]) => (
                   <div key={phase} className="space-y-4">
                     <div className="flex items-center justify-between border-l-4 border-blue-600 pl-4 py-1">
@@ -269,7 +266,7 @@ const Estimator: React.FC = () => {
                         className="text-sm font-black text-slate-900 uppercase tracking-widest bg-transparent border-none focus:ring-0 p-0"
                       />
                       <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
-                        {items.reduce((sum, i) => sum + i.estimatedHours, 0)} HR Subtotal
+                        {items.reduce((sum, i) => sum + i.estimatedHours, 0)} h Subtotal
                       </span>
                     </div>
                     
@@ -304,7 +301,7 @@ const Estimator: React.FC = () => {
                                   onChange={(e) => updateItem(item.originalIndex, 'estimatedHours', parseFloat(e.target.value) || 0)}
                                   className="w-14 bg-transparent border-none p-0 text-xl font-black text-slate-900 tracking-tighter text-right focus:ring-0"
                                 />
-                                <span className="text-[10px] text-slate-300 font-black ml-2">HR</span>
+                                <span className="text-[10px] text-slate-300 font-black ml-2">h</span>
                               </div>
                             </div>
                           </div>
@@ -336,7 +333,7 @@ const Estimator: React.FC = () => {
                   <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mb-1">Total WBS Effort</p>
                   <p className="text-6xl font-black text-slate-900 tracking-tighter">
                     {finalTotal}
-                    <span className="text-2xl text-slate-300 font-black ml-4 tracking-normal">HR</span>
+                    <span className="text-2xl text-slate-300 font-black ml-4 tracking-normal">h</span>
                   </p>
                 </div>
                 <button 
@@ -381,7 +378,7 @@ const Estimator: React.FC = () => {
               <div className="flex items-end justify-between">
                  <div className="flex flex-col">
                     <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">WBS Total</span>
-                    <span className="text-2xl font-black text-slate-900 tracking-tighter">{est.totalHours}<span className="text-[10px] ml-2">HR</span></span>
+                    <span className="text-2xl font-black text-slate-900 tracking-tighter">{est.totalHours}<span className="text-[10px] ml-2">h</span></span>
                  </div>
                  <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>

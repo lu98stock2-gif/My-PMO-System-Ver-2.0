@@ -12,9 +12,8 @@ const Projects: React.FC = () => {
   const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
   const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 10));
   const [status, setStatus] = useState<ProjectStatus>('On-going');
-  const [estimatedHours, setEstimatedHours] = useState<string>(''); // New state for estimation
+  const [estimatedHours, setEstimatedHours] = useState<string>(''); 
 
-  // Custom picker state
   const [activePicker, setActivePicker] = useState<'start' | 'end' | null>(null);
   const [viewDate, setViewDate] = useState(new Date());
   const pickerRef = useRef<HTMLDivElement>(null);
@@ -299,7 +298,7 @@ const Projects: React.FC = () => {
 
                     {p.estimatedHours && (
                       <div className="flex items-center text-[10px] font-black text-blue-600 bg-blue-50 w-fit px-2 py-1 rounded-lg shadow-xs border border-blue-100">
-                        EST: {p.estimatedHours} HR
+                        EST: {p.estimatedHours} h
                       </div>
                     )}
                   </div>
