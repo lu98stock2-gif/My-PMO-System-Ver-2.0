@@ -77,6 +77,9 @@ const Projects: React.FC = () => {
       setProjects(prev => [...prev, newProject]);
     }
     resetForm();
+    if (window.innerWidth < 768) {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
   };
 
   const handleEdit = (p: Project, e?: React.MouseEvent) => {
@@ -88,6 +91,7 @@ const Projects: React.FC = () => {
     setEndDate(p.endDate);
     setStatus(p.status);
     setEstimatedHours(p.estimatedHours?.toString() || '');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = (id: string, e: React.MouseEvent) => {
@@ -155,69 +159,69 @@ const Projects: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 w-full max-w-none animate-fadeIn pb-20">
+    <div className="space-y-6 md:space-y-8 w-full max-w-none animate-fadeIn pb-10 md:pb-20">
       <header>
-        <h2 className="text-4xl font-black text-slate-900 tracking-tight">Projects Portfolio</h2>
-        <p className="text-slate-500 font-medium">Manage your projects, set deadlines, and track status.</p>
+        <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight text-center md:text-left">Projects</h2>
+        <p className="text-sm md:text-base text-slate-500 font-medium text-center md:text-left">Manage your portfolio, deadlines, and tracking.</p>
       </header>
 
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-        <div className="xl:col-span-1 bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm sticky top-8 h-fit">
-          <h3 className="text-xl font-black text-slate-900 mb-8">{editingId ? 'Edit Project' : 'Register Project'}</h3>
-          <form onSubmit={handleSave} className="space-y-6">
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 md:gap-8">
+        <div className="xl:col-span-1 bg-white p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-slate-100 shadow-sm md:sticky md:top-8 h-fit">
+          <h3 className="text-lg md:text-xl font-black text-slate-900 mb-6 md:mb-8">{editingId ? 'Edit Project' : 'Register Project'}</h3>
+          <form onSubmit={handleSave} className="space-y-4 md:space-y-6">
             <div>
-              <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-[0.1em]">Project Name</label>
+              <label className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-[0.1em]">Project Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Project Title"
-                className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 font-bold"
+                className="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 font-bold"
               />
             </div>
 
             <div>
-              <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-[0.1em]">Estimated Hours (Total)</label>
+              <label className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-[0.1em]">Estimated Hours (Total)</label>
               <input
                 type="number"
                 value={estimatedHours}
                 onChange={(e) => setEstimatedHours(e.target.value)}
                 placeholder="e.g. 150"
-                className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 font-bold"
+                className="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 font-bold"
               />
             </div>
             
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4">
               <div className="relative" ref={activePicker === 'start' ? pickerRef : null}>
-                <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-[0.1em]">Start Date</label>
+                <label className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-[0.1em]">Start Date</label>
                 <div 
                   onClick={() => { setActivePicker('start'); setViewDate(new Date(startDate)); }}
-                  className="w-full px-5 py-4 rounded-2xl bg-slate-50 flex items-center justify-between cursor-pointer font-bold text-slate-900"
+                  className="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl bg-slate-50 flex items-center justify-between cursor-pointer font-bold text-slate-900"
                 >
-                  <span>{startDate}</span>
-                  <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg>
+                  <span className="text-sm">{startDate}</span>
+                  <svg className="w-4 h-4 md:w-5 md:h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg>
                 </div>
                 {activePicker === 'start' && renderCalendar('start')}
               </div>
               <div className="relative" ref={activePicker === 'end' ? pickerRef : null}>
-                <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-[0.1em]">End Date</label>
+                <label className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-[0.1em]">End Date</label>
                 <div 
                   onClick={() => { setActivePicker('end'); setViewDate(new Date(endDate)); }}
-                  className="w-full px-5 py-4 rounded-2xl bg-slate-50 flex items-center justify-between cursor-pointer font-bold text-slate-900"
+                  className="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl bg-slate-50 flex items-center justify-between cursor-pointer font-bold text-slate-900"
                 >
-                  <span>{endDate}</span>
-                  <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg>
+                  <span className="text-sm">{endDate}</span>
+                  <svg className="w-4 h-4 md:w-5 md:h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg>
                 </div>
                 {activePicker === 'end' && renderCalendar('end')}
               </div>
             </div>
 
             <div>
-              <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-[0.1em]">Status</label>
+              <label className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-[0.1em]">Status</label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as ProjectStatus)}
-                className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 font-bold cursor-pointer"
+                className="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 font-bold cursor-pointer"
               >
                 <option value="On-going">On-going</option>
                 <option value="Done">Done</option>
@@ -226,19 +230,19 @@ const Projects: React.FC = () => {
             </div>
 
             <div>
-              <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-[0.1em]">Description</label>
+              <label className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-[0.1em]">Description</label>
               <textarea
                 value={desc}
                 onChange={(e) => setDesc(e.target.value)}
                 placeholder="High-level objectives..."
-                className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 outline-none h-32 text-slate-900 font-medium resize-none custom-scrollbar"
+                className="w-full px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 outline-none h-24 md:h-32 text-slate-900 font-medium resize-none custom-scrollbar"
               />
             </div>
 
             <div className="flex flex-col gap-3 pt-2">
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white font-black py-5 rounded-2xl shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95 tracking-widest text-xs uppercase"
+                className="w-full bg-blue-600 text-white font-black py-4 md:py-5 rounded-xl md:rounded-2xl shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95 tracking-widest text-xs uppercase"
               >
                 {editingId ? 'Update' : 'Register'}
               </button>
@@ -246,7 +250,7 @@ const Projects: React.FC = () => {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="w-full bg-slate-100 text-slate-500 font-black py-4 rounded-2xl hover:bg-slate-200 transition-all text-xs uppercase tracking-widest"
+                  className="w-full bg-slate-100 text-slate-500 font-black py-3 md:py-4 rounded-xl md:rounded-2xl hover:bg-slate-200 transition-all text-xs uppercase tracking-widest"
                 >
                   Cancel
                 </button>
@@ -255,21 +259,21 @@ const Projects: React.FC = () => {
           </form>
         </div>
 
-        <div className="xl:col-span-3 bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm min-h-[700px]">
-          <div className="flex items-center justify-between mb-12">
-            <h3 className="text-2xl font-black text-slate-900 tracking-tight">Portfolio Analysis</h3>
-            <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+        <div className="xl:col-span-3 bg-white p-6 md:p-10 rounded-2xl md:rounded-[3rem] border border-slate-100 shadow-sm min-h-[400px] md:min-h-[700px]">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 md:mb-12">
+            <h3 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight mb-4 md:mb-0">Portfolio Analysis</h3>
+            <div className="flex flex-wrap items-center gap-4 md:gap-6 text-[8px] md:text-[10px] font-black uppercase tracking-[0.15em] md:tracking-[0.2em] text-slate-400">
                <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-blue-500"></div> Active</div>
                <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-500"></div> Completed</div>
                <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-slate-300"></div> Queue</div>
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {projects.length === 0 && (
-              <div className="col-span-full py-40 flex flex-col items-center justify-center text-slate-200 border-4 border-dashed border-slate-50 rounded-[3rem]">
-                 <svg className="w-20 h-20 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                 <p className="font-black text-lg uppercase tracking-widest">Your portfolio is empty</p>
+              <div className="col-span-full py-20 md:py-40 flex flex-col items-center justify-center text-slate-200 border-4 border-dashed border-slate-50 rounded-2xl md:rounded-[3rem]">
+                 <svg className="w-16 h-16 md:w-20 md:h-20 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                 <p className="font-black text-sm md:text-lg uppercase tracking-widest text-center">Your portfolio is empty</p>
               </div>
             )}
             {projects.map(p => (
@@ -283,20 +287,20 @@ const Projects: React.FC = () => {
                     }`}>
                       {p.status}
                     </span>
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={(e) => handleEdit(p, e)} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Edit project">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    <div className="flex items-center gap-1 opacity-0 md:opacity-0 group-hover:opacity-100 transition-opacity md:transition-opacity md:pointer-events-none md:group-hover:pointer-events-auto">
+                      <button onClick={(e) => handleEdit(p, e)} className="p-2 md:p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                        <svg className="w-5 h-5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                       </button>
-                      <button onClick={(e) => handleDelete(p.id, e)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" title="Delete project">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      <button onClick={(e) => handleDelete(p.id, e)} className="p-2 md:p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
+                        <svg className="w-5 h-5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                       </button>
                     </div>
                   </div>
-                  <h4 className="font-black text-slate-900 uppercase tracking-tight text-lg mb-2 line-clamp-1">{p.name}</h4>
+                  <h4 className="font-black text-slate-900 uppercase tracking-tight text-base md:text-lg mb-2 line-clamp-1">{p.name}</h4>
                   
                   <div className="space-y-2">
                     <div className="flex items-center text-[10px] font-bold text-slate-400 bg-white w-fit px-2 py-1 rounded-lg shadow-xs border border-slate-50">
-                      <svg className="w-3 h-3 mr-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                      <svg className="w-3 h-3 mr-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg>
                       {p.startDate} — {p.endDate}
                     </div>
 

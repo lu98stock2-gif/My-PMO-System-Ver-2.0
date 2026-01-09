@@ -115,15 +115,15 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 animate-fadeIn w-full max-w-none px-4 pb-20">
+    <div className="space-y-6 md:space-y-8 animate-fadeIn w-full max-w-none px-0 md:px-4 pb-10 md:pb-20">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h2 className="text-4xl font-black text-slate-900 tracking-tight">Dashboard</h2>
-          <p className="text-slate-500 font-medium">Monthly performance and project insights.</p>
+          <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight">Dashboard</h2>
+          <p className="text-sm md:text-base text-slate-500 font-medium">Monthly performance and project insights.</p>
         </div>
         
         <div className="relative">
-          <div className="flex items-center bg-white px-5 py-3 rounded-2xl border border-slate-100 shadow-sm">
+          <div className="flex items-center justify-between bg-white px-4 md:px-5 py-3 rounded-2xl border border-slate-100 shadow-sm">
             <div className="flex items-center space-x-1 border-r border-slate-100 pr-3 mr-3">
               <button onClick={() => adjustYear(-1)} className="p-1 text-slate-400 hover:text-blue-600 transition-colors" title="Previous Year">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M11 19l-7-7 7-7" /></svg>
@@ -134,13 +134,13 @@ const Dashboard: React.FC = () => {
             </div>
             
             <div 
-              className="flex items-center space-x-3 group cursor-pointer" 
+              className="flex items-center space-x-2 md:space-x-3 group cursor-pointer" 
               onClick={() => setShowPicker(!showPicker)}
             >
-              <div className="p-2 bg-blue-50 rounded-xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg>
+              <div className="p-1.5 md:p-2 bg-blue-50 rounded-xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg>
               </div>
-              <span className="font-black text-slate-900 tracking-tight text-lg min-w-[140px] text-center">{getMonthName(selectedMonth)}</span>
+              <span className="font-black text-slate-900 tracking-tight text-base md:text-lg min-w-[100px] md:min-w-[140px] text-center truncate">{getMonthName(selectedMonth)}</span>
             </div>
 
             <div className="flex items-center space-x-1 border-l border-slate-100 pl-3 ml-3">
@@ -182,63 +182,63 @@ const Dashboard: React.FC = () => {
       </header>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
         {[
           { label: 'ACTUAL HOURS (MONTH)', value: monthTotalHours, unit: 'h', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', color: 'blue' },
           { label: 'ESTIMATED (THIS MONTH)', value: Math.round(totalEstimatedInMonth), unit: 'h', icon: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z', color: 'emerald' },
           { label: 'DELIVERABLES PRODUCED', value: deliverablesThisMonth.length, unit: '', icon: 'M13 10V3L4 14h7v7l9-11h-7z', color: 'purple' },
         ].map((item, idx) => (
-          <div key={idx} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300">
-            <div className={`w-12 h-12 rounded-2xl bg-${item.color}-50 flex items-center justify-center text-${item.color}-600 mb-6`}>
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div key={idx} className="bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300">
+            <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-${item.color}-50 flex items-center justify-center text-${item.color}-600 mb-4 md:mb-6`}>
+              <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
               </svg>
             </div>
-            <p className="text-[10px] font-black text-slate-400 tracking-widest mb-1 uppercase">{item.label}</p>
-            <p className="text-4xl font-black text-slate-900">
+            <p className="text-[9px] md:text-[10px] font-black text-slate-400 tracking-widest mb-1 uppercase">{item.label}</p>
+            <p className="text-3xl md:text-4xl font-black text-slate-900">
               {item.value}
-              <span className="text-xl text-slate-300 font-black ml-4">{item.unit}</span>
+              <span className="text-lg md:text-xl text-slate-300 font-black ml-2 md:ml-4">{item.unit}</span>
             </p>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-        <div className="xl:col-span-3 bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
-          <h3 className="text-xl font-bold text-slate-900 mb-8 flex items-center">
-            <span className="w-1.5 h-6 bg-blue-600 rounded-full mr-3"></span>
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 md:gap-8">
+        <div className="xl:col-span-3 bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+          <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6 md:mb-8 flex items-center">
+            <span className="w-1.5 h-5 md:h-6 bg-blue-600 rounded-full mr-3"></span>
             Actual vs Estimated
           </h3>
-          <div className="h-[450px]">
+          <div className="h-[300px] md:h-[450px] -mx-4 md:mx-0">
             {mainChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={mainChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <BarChart data={mainChartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11, fontWeight: 600 }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11 }} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10, fontWeight: 600 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10 }} />
                   <Tooltip 
                     cursor={{ fill: '#f8fafc' }}
-                    contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)' }}
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                   />
-                  <Legend iconType="circle" wrapperStyle={{ paddingTop: '30px' }} />
-                  <Bar name="Actual Hours" dataKey="actual" fill="#2563eb" radius={[6, 6, 0, 0]} barSize={40} />
-                  <Bar name="Estimated Hours" dataKey="estimated" fill="#e2e8f0" radius={[6, 6, 0, 0]} barSize={40} />
+                  <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '10px' }} />
+                  <Bar name="Actual" dataKey="actual" fill="#2563eb" radius={[4, 4, 0, 0]} barSize={30} />
+                  <Bar name="Estimated" dataKey="estimated" fill="#e2e8f0" radius={[4, 4, 0, 0]} barSize={30} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-full flex items-center justify-center text-slate-400 font-medium italic">No comparison data for this month.</div>
+              <div className="h-full flex items-center justify-center text-slate-400 font-medium italic text-sm">No comparison data for this month.</div>
             )}
           </div>
         </div>
 
-        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col">
-          <h3 className="text-xl font-bold text-slate-900 mb-8">On-going Project</h3>
-          <div className="flex-1 space-y-6 overflow-y-auto custom-scrollbar">
-            {inProgressProjects.length === 0 && <p className="text-slate-400 text-sm">No on-going projects found.</p>}
+        <div className="bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm flex flex-col h-fit md:h-auto">
+          <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6">On-going Project</h3>
+          <div className="space-y-4 overflow-y-auto max-h-[300px] md:max-h-none md:flex-1 custom-scrollbar">
+            {inProgressProjects.length === 0 && <p className="text-slate-400 text-sm italic">No on-going projects found.</p>}
             {inProgressProjects.map(p => (
-              <div key={p.id} className="p-5 rounded-2xl border border-slate-100 hover:border-blue-300 transition-all duration-300 group">
+              <div key={p.id} className="p-4 rounded-xl border border-slate-100 hover:border-blue-300 transition-all duration-300 group">
                 <div className="flex items-center justify-between mb-2">
-                   <p className="text-xs font-black text-blue-600 uppercase tracking-tighter">PROJECT</p>
+                   <p className="text-[10px] font-black text-blue-600 uppercase tracking-tighter">PROJECT</p>
                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 </div>
                 <p className="text-sm font-bold text-slate-900 truncate mb-1">{p.name}</p>
@@ -249,13 +249,13 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
-          <h3 className="text-xl font-bold text-slate-900 mb-8 flex items-center">
-            <span className="w-1.5 h-6 bg-emerald-500 rounded-full mr-3"></span>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8">
+        <div className="bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+          <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6 flex items-center">
+            <span className="w-1.5 h-5 md:h-6 bg-emerald-500 rounded-full mr-3"></span>
             Hours By Project
           </h3>
-          <div className="h-96">
+          <div className="h-72 md:h-96 -mx-4 md:mx-0">
             {projectHoursData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart margin={{ top: 20 }}>
@@ -263,32 +263,32 @@ const Dashboard: React.FC = () => {
                     data={projectHoursData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={100}
-                    outerRadius={130}
+                    innerRadius={60}
+                    outerRadius={80}
                     paddingAngle={8}
                     dataKey="value"
-                    label={({name, percent}) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                    label={({name, percent}) => `${name.substring(0,6)}... (${(percent * 100).toFixed(0)}%)`}
                   >
                     {projectHoursData.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip />
-                  <Legend />
+                  <Legend wrapperStyle={{ fontSize: '10px' }} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-full flex items-center justify-center text-slate-300">No activity this month.</div>
+              <div className="h-full flex items-center justify-center text-slate-300 text-sm">No activity this month.</div>
             )}
           </div>
         </div>
 
-        <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
-          <h3 className="text-xl font-bold text-slate-900 mb-8 flex items-center">
-            <span className="w-1.5 h-6 bg-purple-500 rounded-full mr-3"></span>
+        <div className="bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+          <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6 flex items-center">
+            <span className="w-1.5 h-5 md:h-6 bg-purple-500 rounded-full mr-3"></span>
             Task Type Distribution
           </h3>
-          <div className="h-96">
+          <div className="h-72 md:h-96 -mx-4 md:mx-0">
             {taskTypeData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart margin={{ top: 20 }}>
@@ -296,8 +296,8 @@ const Dashboard: React.FC = () => {
                     data={taskTypeData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={100}
-                    outerRadius={130}
+                    innerRadius={60}
+                    outerRadius={80}
                     paddingAngle={8}
                     dataKey="value"
                     label={({name, percent}) => `${name} (${(percent * 100).toFixed(0)}%)`}
@@ -307,37 +307,36 @@ const Dashboard: React.FC = () => {
                     ))}
                   </Pie>
                   <Tooltip />
-                  <Legend />
+                  <Legend wrapperStyle={{ fontSize: '10px' }} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-full flex items-center justify-center text-slate-300">No task types recorded.</div>
+              <div className="h-full flex items-center justify-center text-slate-300 text-sm">No task types recorded.</div>
             )}
           </div>
         </div>
       </div>
 
-      {/* Monthly Deliverables List */}
-      <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
-        <h3 className="text-xl font-bold text-slate-900 mb-8 flex items-center">
-          <span className="w-1.5 h-6 bg-blue-600 rounded-full mr-3"></span>
+      <div className="bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+        <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6 flex items-center">
+          <span className="w-1.5 h-5 md:h-6 bg-blue-600 rounded-full mr-3"></span>
           Deliverables this Month
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {deliverablesThisMonth.length === 0 && (
-            <div className="col-span-full py-20 flex flex-col items-center justify-center text-slate-300">
-               <p>No deliverables recorded for {getMonthName(selectedMonth)}.</p>
+            <div className="col-span-full py-10 md:py-20 flex flex-col items-center justify-center text-slate-300">
+               <p className="text-sm">No deliverables recorded for {getMonthName(selectedMonth)}.</p>
             </div>
           )}
           {deliverablesThisMonth.map((e, idx) => (
-            <div key={idx} className="p-4 rounded-2xl border border-slate-50 bg-slate-50/50 flex flex-col justify-between hover:border-blue-200 transition-all group">
+            <div key={idx} className="p-4 rounded-xl border border-slate-50 bg-slate-50/50 flex flex-col justify-between hover:border-blue-200 transition-all group">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest">{projects.find(p => p.id === e.projectId)?.name}</span>
-                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{e.date}</span>
+                  <span className="text-[8px] md:text-[9px] font-black text-blue-600 uppercase tracking-widest truncate max-w-[60%]">{projects.find(p => p.id === e.projectId)?.name}</span>
+                  <span className="text-[8px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest">{e.date}</span>
                 </div>
-                <h4 className="font-bold text-slate-900 text-sm mb-1 group-hover:text-blue-700 transition-colors">{e.deliverable}</h4>
-                <p className="text-xs text-slate-500 line-clamp-1">{e.taskName}</p>
+                <h4 className="font-bold text-slate-900 text-xs md:text-sm mb-1 group-hover:text-blue-700 transition-colors line-clamp-1">{e.deliverable}</h4>
+                <p className="text-[10px] text-slate-500 line-clamp-1">{e.taskName}</p>
               </div>
             </div>
           ))}

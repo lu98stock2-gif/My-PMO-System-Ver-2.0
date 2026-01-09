@@ -172,29 +172,29 @@ const TimeTracking: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 w-full max-w-none px-4">
-      <header className="flex items-center justify-between">
-        <div>
-          <h2 className="text-4xl font-black text-slate-900 tracking-tight">Time Tracking</h2>
-          <p className="text-slate-500 font-medium">Capture daily deliverables and work duration.</p>
+    <div className="space-y-6 md:space-y-8 w-full max-w-none px-0 md:px-4 pb-10 md:pb-20">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="text-center md:text-left">
+          <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight">Time Tracking</h2>
+          <p className="text-xs md:text-base text-slate-500 font-medium">Capture deliverables and daily duration.</p>
         </div>
         <div className="relative">
-          <div className="flex items-center bg-white px-5 py-3 rounded-2xl border border-slate-100 shadow-sm">
+          <div className="flex items-center justify-between bg-white px-4 md:px-5 py-3 rounded-2xl border border-slate-100 shadow-sm">
             <button 
               onClick={() => {
                 const d = new Date(selectedDate);
                 d.setDate(d.getDate() - 1);
                 setSelectedDate(d.toLocaleDateString('sv'));
               }}
-              className="p-1 text-slate-400 hover:text-blue-600 transition-colors"
+              className="p-1.5 text-slate-400 hover:text-blue-600 transition-colors"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
             </button>
-            <div className="mx-6 flex items-center space-x-3 group cursor-pointer" onClick={() => setShowCalendar(!showCalendar)}>
-              <div className="p-2 bg-blue-50 rounded-xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg>
+            <div className="mx-4 md:mx-6 flex items-center space-x-2 md:space-x-3 group cursor-pointer" onClick={() => setShowCalendar(!showCalendar)}>
+              <div className="p-1.5 md:p-2 bg-blue-50 rounded-xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg>
               </div>
-              <span className="font-black text-slate-900 tracking-tight text-lg">{selectedDate}</span>
+              <span className="font-black text-slate-900 tracking-tight text-base md:text-lg">{selectedDate}</span>
             </div>
             <button 
               onClick={() => {
@@ -202,7 +202,7 @@ const TimeTracking: React.FC = () => {
                 d.setDate(d.getDate() + 1);
                 setSelectedDate(d.toLocaleDateString('sv'));
               }}
-              className="p-1 text-slate-400 hover:text-blue-600 transition-colors"
+              className="p-1.5 text-slate-400 hover:text-blue-600 transition-colors"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
             </button>
@@ -216,136 +216,135 @@ const TimeTracking: React.FC = () => {
       </header>
 
       {/* NEW/EDIT ACTIVITY ENTRY */}
-      <div className={`p-10 rounded-[3rem] shadow-sm border transition-all duration-500 relative overflow-hidden ${editingId ? 'bg-blue-50 border-blue-200' : 'bg-white border-slate-100'}`}>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
-        <div className="flex items-center justify-between mb-8 relative z-10">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 flex items-center">
-            <span className={`w-8 h-[1px] mr-3 ${editingId ? 'bg-blue-600' : 'bg-slate-300'}`}></span>
-            {editingId ? 'EDITING ACTIVITY' : 'NEW ACTIVITY ENTRY'}
+      <div className={`p-6 md:p-10 rounded-2xl md:rounded-[3rem] shadow-sm border transition-all duration-500 relative overflow-hidden ${editingId ? 'bg-blue-50 border-blue-200' : 'bg-white border-slate-100'}`}>
+        <div className="absolute top-0 right-0 w-32 h-32 md:w-64 md:h-64 bg-blue-500/10 rounded-full blur-3xl -mr-16 -mt-16 md:-mr-32 md:-mt-32"></div>
+        <div className="flex items-center justify-between mb-6 md:mb-8 relative z-10">
+          <h3 className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 flex items-center">
+            <span className={`w-4 md:w-8 h-[1px] mr-2 md:mr-3 ${editingId ? 'bg-blue-600' : 'bg-slate-300'}`}></span>
+            {editingId ? 'EDIT ACTIVITY' : 'NEW ACTIVITY'}
           </h3>
           {editingId && (
              <button onClick={() => { setEditingId(null); setTaskName(''); setProjectId(''); }} className="text-[10px] font-black text-blue-600 hover:underline uppercase tracking-widest">
-                Cancel Edit
+                Cancel
              </button>
           )}
         </div>
-        <form onSubmit={handleRecord} className="grid grid-cols-1 md:grid-cols-12 gap-6 items-end relative z-10">
-          <div className="md:col-span-2 space-y-2">
-            <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Project</label>
-            <select 
-              value={projectId}
-              onChange={e => setProjectId(e.target.value)}
-              className="w-full bg-white border border-slate-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold text-slate-900"
+        <form onSubmit={handleRecord} className="flex flex-col gap-4 relative z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-4 items-end">
+            <div className="md:col-span-2 space-y-1">
+              <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Project</label>
+              <select 
+                value={projectId}
+                onChange={e => setProjectId(e.target.value)}
+                className="w-full bg-white border border-slate-100 rounded-xl md:rounded-2xl px-4 md:px-5 py-3 md:py-4 outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold text-slate-900 text-sm"
+              >
+                <option value="">Select Project</option>
+                {onGoingProjects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+              </select>
+            </div>
+            <div className="md:col-span-2 space-y-1">
+              <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Task Type</label>
+              <input 
+                type="text"
+                value={taskType}
+                onChange={e => setTaskType(e.target.value)}
+                placeholder="Design/Code"
+                className="w-full bg-white border border-slate-100 rounded-xl md:rounded-2xl px-4 md:px-5 py-3 md:py-4 outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold placeholder-slate-400 text-slate-900 text-sm"
+              />
+            </div>
+            <div className="md:col-span-4 space-y-1">
+              <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Description</label>
+              <input 
+                type="text"
+                value={taskName}
+                onChange={e => setTaskName(e.target.value)}
+                placeholder="What did you achieve?"
+                className="w-full bg-white border border-slate-100 rounded-xl md:rounded-2xl px-4 md:px-5 py-3 md:py-4 outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold placeholder-slate-400 text-slate-900 text-sm"
+              />
+            </div>
+            <div className="md:col-span-2 space-y-1">
+              <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Deliverable</label>
+              <input 
+                type="text"
+                value={deliverable}
+                onChange={e => setDeliverable(e.target.value)}
+                placeholder="PR/URL/File"
+                className="w-full bg-white border border-slate-100 rounded-xl md:rounded-2xl px-4 md:px-5 py-3 md:py-4 outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold placeholder-slate-400 text-slate-900 text-sm"
+              />
+            </div>
+            <div className="md:col-span-1 space-y-1">
+              <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest ml-1">Hours</label>
+              <input 
+                type="number"
+                step="0.5"
+                value={hours}
+                onChange={e => setHours(parseFloat(e.target.value) || 0)}
+                className="w-full bg-white border border-slate-100 rounded-xl md:rounded-2xl px-2 md:px-5 py-3 md:py-4 outline-none focus:ring-2 focus:ring-blue-500 transition-all font-black text-blue-600 text-center text-sm"
+              />
+            </div>
+            <button 
+              type="submit"
+              className={`md:col-span-1 text-white font-black py-3 md:py-4 rounded-xl md:rounded-2xl transition-all shadow-xl active:scale-95 flex items-center justify-center ${editingId ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-100' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-100'}`}
             >
-              <option value="">Select Project</option>
-              {onGoingProjects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-            </select>
+              {editingId ? (
+                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+              ) : (
+                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" /></svg>
+              )}
+            </button>
           </div>
-          <div className="md:col-span-2 space-y-2">
-            <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Task Type</label>
-            <input 
-              type="text"
-              value={taskType}
-              onChange={e => setTaskType(e.target.value)}
-              placeholder="Design/Code"
-              className="w-full bg-white border border-slate-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold placeholder-slate-400 text-slate-900"
-            />
-          </div>
-          <div className="md:col-span-4 space-y-2">
-            <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Description</label>
-            <input 
-              type="text"
-              value={taskName}
-              onChange={e => setTaskName(e.target.value)}
-              placeholder="What did you achieve?"
-              className="w-full bg-white border border-slate-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold placeholder-slate-400 text-slate-900"
-            />
-          </div>
-          <div className="md:col-span-2 space-y-2">
-            <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Deliverable</label>
-            <input 
-              type="text"
-              value={deliverable}
-              onChange={e => setDeliverable(e.target.value)}
-              placeholder="PR/URL/File"
-              className="w-full bg-white border border-slate-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500 transition-all font-bold placeholder-slate-400 text-slate-900"
-            />
-          </div>
-          <div className="md:col-span-1 space-y-2">
-            <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Hours</label>
-            <input 
-              type="number"
-              step="0.5"
-              value={hours}
-              onChange={e => setHours(parseFloat(e.target.value) || 0)}
-              className="w-full bg-white border border-slate-100 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500 transition-all font-black text-blue-600 text-center"
-            />
-          </div>
-          <button 
-            type="submit"
-            className={`md:col-span-1 text-white font-black py-4 rounded-2xl transition-all shadow-xl active:scale-95 flex items-center justify-center ${editingId ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-100' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-100'}`}
-          >
-            {editingId ? (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-            ) : (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" /></svg>
-            )}
-          </button>
         </form>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-8 pb-20">
-        <div className="xl:col-span-3 bg-white rounded-[2rem] border border-slate-100 shadow-sm flex flex-col min-h-[550px] overflow-hidden">
-           <div className="p-8 border-b border-slate-50 flex items-center justify-between">
-             <h3 className="text-xl font-bold text-slate-900 tracking-tight flex items-center">
-                <span className="w-1.5 h-6 bg-blue-600 rounded-full mr-3"></span>
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 md:gap-8 pb-10">
+        <div className="xl:col-span-3 bg-white rounded-2xl md:rounded-[2rem] border border-slate-100 shadow-sm flex flex-col min-h-[400px] md:min-h-[550px] overflow-hidden">
+           <div className="p-5 md:p-8 border-b border-slate-50 flex items-center justify-between">
+             <h3 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight flex items-center">
+                <span className="w-1.5 h-5 md:h-6 bg-blue-600 rounded-full mr-3"></span>
                 WORK LOG
              </h3>
-             <div className="flex items-center space-x-2">
-               <span className="bg-slate-100 text-slate-500 px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase">{dayEntries.length} Records</span>
-             </div>
+             <span className="bg-slate-100 text-slate-500 px-3 md:px-4 py-1 rounded-full text-[8px] md:text-[10px] font-black tracking-widest uppercase">{dayEntries.length} Records</span>
            </div>
-           <div className="flex-1 p-8 space-y-6 overflow-y-auto custom-scrollbar">
+           <div className="flex-1 p-4 md:p-8 space-y-4 md:space-y-6 overflow-y-auto custom-scrollbar">
              {dayEntries.length === 0 && (
                <div className="h-full flex flex-col items-center justify-center text-slate-300">
-                 <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-                   <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                 <div className="w-16 h-16 md:w-24 md:h-24 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                   <svg className="w-10 h-10 md:w-12 md:h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                  </div>
-                 <p className="font-semibold text-slate-400">Nothing recorded for this day.</p>
+                 <p className="text-sm font-semibold text-slate-400">Empty for today.</p>
                </div>
              )}
              {dayEntries.map(e => (
-               <div key={e.id} className="group p-6 rounded-3xl border border-slate-50 bg-slate-50/50 flex items-center justify-between hover:bg-white hover:border-blue-200 transition-all duration-300 hover:shadow-xl hover:shadow-blue-50/50">
-                 <div className="flex-1 min-w-0">
-                   <div className="flex items-center space-x-4 mb-2">
-                    <span className="text-[11px] font-black text-blue-600 tracking-tighter uppercase px-3 py-1 bg-blue-50 rounded-xl">{allProjects.find(p => p.id === e.projectId)?.name}</span>
+               <div key={e.id} className="group p-4 md:p-6 rounded-2xl md:rounded-3xl border border-slate-50 bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between hover:bg-white hover:border-blue-200 transition-all duration-300 hover:shadow-xl hover:shadow-blue-50/50">
+                 <div className="flex-1 min-w-0 mb-4 md:mb-0">
+                   <div className="flex items-center space-x-3 mb-2">
+                    <span className="text-[10px] md:text-[11px] font-black text-blue-600 tracking-tighter uppercase px-2 py-0.5 bg-blue-50 rounded-lg truncate max-w-[120px] md:max-w-none">{allProjects.find(p => p.id === e.projectId)?.name}</span>
                     <span className="text-slate-300">|</span>
-                    <span className="text-[11px] text-slate-400 font-black uppercase tracking-widest">{e.taskType}</span>
+                    <span className="text-[10px] md:text-[11px] text-slate-400 font-black uppercase tracking-widest truncate">{e.taskType}</span>
                    </div>
-                   <h4 className="font-bold text-slate-900 text-2xl leading-tight mb-2 truncate group-hover:text-blue-700 transition-colors">{e.taskName}</h4>
+                   <h4 className="font-bold text-slate-900 text-lg md:text-2xl leading-tight mb-2 truncate group-hover:text-blue-700 transition-colors">{e.taskName}</h4>
                    {e.deliverable && (
-                     <div className="flex items-center text-sm text-slate-500 font-semibold bg-white w-fit px-3 py-1.5 rounded-xl shadow-sm border border-slate-100">
-                        <svg className="w-4 h-4 mr-2 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        <span className="text-slate-400 mr-2 uppercase text-[10px]">Deliverable:</span> {e.deliverable}
+                     <div className="flex items-center text-xs md:text-sm text-slate-500 font-semibold bg-white w-fit px-2 md:px-3 py-1 md:py-1.5 rounded-lg md:rounded-xl shadow-sm border border-slate-100">
+                        <svg className="w-3 h-3 md:w-4 md:h-4 mr-2 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span className="text-slate-400 mr-2 uppercase text-[8px] md:text-[10px] whitespace-nowrap">Deliverable:</span> 
+                        <span className="truncate max-w-[150px] md:max-w-none">{e.deliverable}</span>
                      </div>
                    )}
                  </div>
-                 <div className="flex items-center space-x-6 shrink-0">
-                   <div className="text-right">
-                     <p className="text-5xl font-black text-slate-900 tracking-tighter">{e.hours}<span className="text-lg text-slate-300 font-black ml-2">h</span></p>
+                 <div className="flex items-center justify-between md:justify-end space-x-4 md:space-x-6 shrink-0 border-t md:border-t-0 pt-4 md:pt-0 border-slate-100">
+                   <div className="text-left md:text-right">
+                     <p className="text-3xl md:text-5xl font-black text-slate-900 tracking-tighter">{e.hours}<span className="text-base md:text-lg text-slate-300 font-black ml-1 md:ml-2">h</span></p>
                    </div>
-                   <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all">
+                   <div className="flex items-center space-x-1 md:space-x-2">
                       <button 
                         onClick={(ev) => startEdit(e, ev)}
-                        className="p-3 text-slate-300 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
-                        title="Edit entry"
+                        className="p-2 md:p-3 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                       </button>
                       <button 
                         onClick={(ev) => handleDelete(e.id, ev)}
-                        className="p-3 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-                        title="Delete entry"
+                        className="p-2 md:p-3 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                       </button>
@@ -356,38 +355,37 @@ const TimeTracking: React.FC = () => {
            </div>
         </div>
 
-        <div className="xl:col-span-1 space-y-8">
-          <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm text-center">
-            <div className="w-20 h-20 bg-blue-50 rounded-[2rem] flex items-center justify-center text-blue-600 mx-auto mb-6 shadow-sm">
-              <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <div className="xl:col-span-1 space-y-6 md:space-y-8">
+          <div className="bg-white p-6 md:p-10 rounded-2xl md:rounded-[3rem] border border-slate-100 shadow-sm text-center">
+            <div className="w-12 h-12 md:w-20 md:h-20 bg-blue-50 rounded-xl md:rounded-[2rem] flex items-center justify-center text-blue-600 mx-auto mb-4 md:mb-6 shadow-sm">
+              <svg className="w-6 h-6 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             </div>
-            <p className="text-[10px] font-black text-slate-400 tracking-[0.25em] uppercase mb-1">Total Duration</p>
-            <p className="text-7xl font-black text-slate-900 tracking-tighter">
+            <p className="text-[9px] md:text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase mb-1">Total Duration</p>
+            <p className="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter">
               {dayTotal}
-              <span className="text-2xl text-slate-300 font-black ml-4 tracking-normal">h</span>
+              <span className="text-xl md:text-2xl text-slate-300 font-black ml-2 md:ml-4 tracking-normal">h</span>
             </p>
           </div>
 
-          <div className="bg-white p-10 rounded-[3.5rem] border border-slate-100 shadow-sm flex flex-col">
-            <h3 className="text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase mb-6 flex items-center">
-              <svg className="w-5 h-5 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-              Daily Progress Note
+          <div className="bg-white p-6 md:p-10 rounded-2xl md:rounded-[3.5rem] border border-slate-100 shadow-sm flex flex-col">
+            <h3 className="text-[9px] md:text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase mb-4 md:mb-6 flex items-center">
+              <svg className="w-4 h-4 md:w-5 md:h-5 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+              Progress Note
             </h3>
             <textarea
               value={dailyMemo}
               onChange={(e) => handleSaveMemo(e.target.value)}
-              placeholder="Jot down highlights or blockers..."
-              className="w-full h-48 px-6 py-5 rounded-3xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 outline-none text-sm text-slate-900 resize-none font-medium custom-scrollbar"
+              placeholder="Highlights or blockers..."
+              className="w-full h-32 md:h-48 px-4 md:px-6 py-4 md:py-5 rounded-xl md:rounded-3xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 outline-none text-xs md:text-sm text-slate-900 resize-none font-medium custom-scrollbar"
             />
-            <p className="text-[10px] text-slate-300 mt-4 text-center font-black tracking-widest uppercase">Autosave Active</p>
           </div>
 
-          <div className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm flex flex-col items-center">
-            <h3 className="text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase mb-6 flex items-center">
+          <div className="bg-white p-6 md:p-8 rounded-2xl md:rounded-[3rem] border border-slate-100 shadow-sm flex flex-col items-center">
+            <h3 className="text-[9px] md:text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase mb-4 md:mb-6 flex items-center">
                <span className="w-1.5 h-4 bg-purple-500 rounded-full mr-2"></span>
-               Daily Distribution
+               Distribution
             </h3>
-            <div className="w-full h-80">
+            <div className="w-full h-64 md:h-80 -mx-4">
               {chartData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -395,8 +393,8 @@ const TimeTracking: React.FC = () => {
                       data={chartData}
                       cx="50%"
                       cy="45%"
-                      innerRadius={70}
-                      outerRadius={95}
+                      innerRadius={50}
+                      outerRadius={70}
                       paddingAngle={8}
                       dataKey="value"
                     >
@@ -407,11 +405,11 @@ const TimeTracking: React.FC = () => {
                     <Tooltip 
                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                     />
-                    <Legend iconType="circle" verticalAlign="bottom" wrapperStyle={{ paddingTop: '20px' }} />
+                    <Legend iconType="circle" verticalAlign="bottom" wrapperStyle={{ paddingTop: '10px', fontSize: '10px' }} />
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center text-slate-300 text-sm font-black uppercase tracking-widest italic">No Data</div>
+                <div className="h-full flex items-center justify-center text-slate-300 text-[10px] font-black uppercase tracking-widest italic">No Data</div>
               )}
             </div>
           </div>
