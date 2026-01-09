@@ -9,7 +9,8 @@ const TimeTracking: React.FC = () => {
   const onGoingProjects = useMemo(() => allProjects.filter(p => p.status === 'On-going'), [allProjects]);
   
   const [entries, setEntries] = useState<TimeEntry[]>([]);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
+  // Use local ISO-like date string (YYYY-MM-DD) for initial state
+  const [selectedDate, setSelectedDate] = useState(new Date().toLocaleDateString('sv'));
   const [showCalendar, setShowCalendar] = useState(false);
   const [calendarViewDate, setCalendarViewDate] = useState(new Date()); 
   const calendarRef = useRef<HTMLDivElement>(null);
@@ -150,7 +151,7 @@ const TimeTracking: React.FC = () => {
     }
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     return (
-      <div className="p-5 w-72 bg-white border border-slate-100 shadow-2xl rounded-3xl animate-fadeIn scale-100 origin-top-right">
+      <div className="p-5 w-72 bg-white border border-slate-100 shadow-sm rounded-3xl animate-fadeIn scale-100 origin-top-right">
         <div className="flex items-center justify-between mb-6">
           <span className="font-black text-slate-900 tracking-tight">{monthNames[month]} {year}</span>
           <div className="flex gap-2">
@@ -183,7 +184,7 @@ const TimeTracking: React.FC = () => {
               onClick={() => {
                 const d = new Date(selectedDate);
                 d.setDate(d.getDate() - 1);
-                setSelectedDate(d.toISOString().slice(0, 10));
+                setSelectedDate(d.toLocaleDateString('sv'));
               }}
               className="p-1 text-slate-400 hover:text-blue-600 transition-colors"
             >
@@ -199,7 +200,7 @@ const TimeTracking: React.FC = () => {
               onClick={() => {
                 const d = new Date(selectedDate);
                 d.setDate(d.getDate() + 1);
-                setSelectedDate(d.toISOString().slice(0, 10));
+                setSelectedDate(d.toLocaleDateString('sv'));
               }}
               className="p-1 text-slate-400 hover:text-blue-600 transition-colors"
             >

@@ -6,7 +6,8 @@ import { MonthlyReport } from '../types';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, LabelList } from 'recharts';
 
 const Reports: React.FC = () => {
-  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
+  // Use local time for initial month state
+  const [selectedMonth, setSelectedMonth] = useState(new Date().toLocaleDateString('sv').slice(0, 7));
   const [language, setLanguage] = useState('Japanese');
   const [showPicker, setShowPicker] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);

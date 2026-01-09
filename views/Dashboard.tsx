@@ -4,7 +4,8 @@ import { DB } from '../db';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
 const Dashboard: React.FC = () => {
-  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
+  // Use local time for the current month (YYYY-MM)
+  const [selectedMonth, setSelectedMonth] = useState(new Date().toLocaleDateString('sv').slice(0, 7));
   const [showPicker, setShowPicker] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
   
@@ -316,6 +317,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Monthly Deliverables List */}
       <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
         <h3 className="text-xl font-bold text-slate-900 mb-8 flex items-center">
           <span className="w-1.5 h-6 bg-blue-600 rounded-full mr-3"></span>

@@ -7,10 +7,13 @@ const Projects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   
+  // Use local ISO-like date string (YYYY-MM-DD)
+  const getTodayStr = () => new Date().toLocaleDateString('sv');
+
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
-  const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
-  const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 10));
+  const [startDate, setStartDate] = useState(getTodayStr());
+  const [endDate, setEndDate] = useState(getTodayStr());
   const [status, setStatus] = useState<ProjectStatus>('On-going');
   const [estimatedHours, setEstimatedHours] = useState<string>(''); 
 
@@ -32,8 +35,9 @@ const Projects: React.FC = () => {
   const resetForm = () => {
     setName('');
     setDesc('');
-    setStartDate(new Date().toISOString().slice(0, 10));
-    setEndDate(new Date().toISOString().slice(0, 10));
+    const today = getTodayStr();
+    setStartDate(today);
+    setEndDate(today);
     setStatus('On-going');
     setEstimatedHours('');
     setEditingId(null);
