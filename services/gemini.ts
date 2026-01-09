@@ -1,37 +1,42 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-// Interface for structured WBS generation response
+/**
+ * Standard Gemini service helper.
+ * Creates a fresh instance for each request to ensure reliability and up-to-date configuration.
+ */
+export const getAiInstance = () => {
+  return new GoogleGenAI({ apiKey: process.env.API_KEY });
+};
+
+// Interface for the structured response from the AI for estimations
 export interface AIResponseEstimate {
-  items: {
+  items: Array<{
     phase: string;
     taskName: string;
     estimatedHours: number;
-    role: string;
+    role?: string;
     rationale: string;
-  }[];
+  }>;
   totalHours: number;
   risks: string;
   assumptions: string;
 }
 
-// Initializing the AI client once for the service
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
-// Standard Gemini service for potential future general purpose AI tasks
-export const getAiInstance = () => {
-  return ai;
-};
-
-// Function to generate a detailed project estimate WBS
+/**
+ * Uses gemini-3-pro-preview to decompose requirements into a structured WBS.
+ * Employs JSON response mode with a defined schema for reliability.
+ */
 export const generateEstimate = async (inputText: string, projectType: string): Promise<AIResponseEstimate> => {
+  const ai = getAiInstance();
+  const prompt = `Decompose the following requirements for a ${projectType} project into a detailed Work Breakdown Structure (WBS). 
+  Requirements: ${inputText}`;
+
   const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
-    contents: `You are an expert project manager. Generate a detailed Work Breakdown Structure (WBS) for the following project type: ${projectType}. 
-    Analyze these requirements and provide a hierarchical task list with effort estimates:
-    ${inputText}`,
+    model: 'gemini-3-pro-preview',
+    contents: prompt,
     config: {
-      responseMimeType: "application/json",
+      responseMimeType: 'application/json',
       responseSchema: {
         type: Type.OBJECT,
         properties: {
@@ -40,49 +45,61 @@ export const generateEstimate = async (inputText: string, projectType: string): 
             items: {
               type: Type.OBJECT,
               properties: {
-                phase: { type: Type.STRING, description: "Project phase (e.g., Discovery, Frontend, Backend)" },
-                taskName: { type: Type.STRING, description: "Specific task name" },
-                estimatedHours: { type: Type.NUMBER, description: "Effort in hours" },
-                role: { type: Type.STRING, description: "Primary role needed (e.g., UI Designer, Senior Dev)" },
-                rationale: { type: Type.STRING, description: "Brief explanation of why this task is needed and its complexity" },
+                phase: { type: Type.STRING },
+                taskName: { type: Type.STRING },
+                estimatedHours: { type: Type.NUMBER },
+                role: { type: Type.STRING },
+                rationale: { type: Type.STRING },
               },
-              required: ["phase", "taskName", "estimatedHours", "role", "rationale"],
+              required: ['phase', 'taskName', 'estimatedHours', 'rationale'],
             },
           },
-          totalHours: { type: Type.NUMBER, description: "Sum of all estimated hours" },
-          risks: { type: Type.STRING, description: "Potential bottlenecks or risks identified" },
-          assumptions: { type: Type.STRING, description: "Assumptions made during estimation" },
+          totalHours: { type: Type.NUMBER },
+          risks: { type: Type.STRING },
+          assumptions: { type: Type.STRING },
         },
-        required: ["items", "totalHours", "risks", "assumptions"],
+        required: ['items', 'totalHours', 'risks', 'assumptions'],
       },
     },
   });
 
-  const text = response.text || '{}';
-  return JSON.parse(text);
+  const text = response.text;
+  if (!text) throw new Error("Empty response from AI");
+  return JSON.parse(text.trim());
 };
 
-// Function to generate a monthly performance report
-export const generateMonthlyReport = async (month: string, stats: string, notes: string, language: string): Promise<string> => {
+/**
+ * Uses gemini-3-flash-preview to synthesize monthly stats and notes into a report.
+ * Returns a tagged text format for easy parsing by the frontend.
+ */
+export const generateMonthlyReport = async (
+  selectedMonth: string,
+  statsJson: string,
+  dailyNotes: string,
+  language: string
+): Promise<string> => {
+  const ai = getAiInstance();
+  const prompt = `Generate a professional monthly project management report for ${selectedMonth} in ${language}.
+  
+  Statistics:
+  ${statsJson}
+  
+  Daily Progress Notes:
+  ${dailyNotes}
+  
+  Format requirements:
+  Provide the output exactly as follows with the bracketed tags:
+  [SUMMARY]
+  (Summarize the primary achievements and status)
+  [INSIGHTS]
+  (Analyze productivity trends, blockers, and resource allocation)
+  [NEXT ACTIONS]
+  (List strategic steps for the upcoming month)`;
+
   const response = await ai.models.generateContent({
-    model: 'gemini-3-pro-preview',
-    contents: `Generate a professional Monthly Project Management Insights Report for ${month} in ${language}.
-    Use the following operational data:
-    Stats: ${stats}
-    Daily Progress Notes: ${notes}
-    
-    The response MUST include the following tags to separate sections:
-    [SUMMARY]
-    (Overall status and key highlights)
-    
-    [INSIGHTS]
-    (Analysis of efficiency, potential bottlenecks, and variance vs estimates)
-    
-    [NEXT ACTIONS]
-    (Strategic recommendations for the upcoming period)
-    
-    Maintain a professional, data-driven, and proactive tone.`,
+    model: 'gemini-3-flash-preview',
+    contents: prompt,
   });
 
-  return response.text || '';
+  return response.text || "";
 };

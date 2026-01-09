@@ -29,7 +29,7 @@ export interface TimeEntry {
   createdAt: string;
 }
 
-// Added EstimateItem interface for the WBS structure
+// Added EstimateItem to define individual tasks in a WBS
 export interface EstimateItem {
   id: string;
   phase: string;
@@ -39,20 +39,20 @@ export interface EstimateItem {
   rationale: string;
 }
 
-// Added Estimate interface for project estimation records
+// Added Estimate to track the full project estimation
 export interface Estimate {
   id: string;
   projectId?: string;
   inputText: string;
-  items: EstimateItem[];
-  totalHours: number;
-  bufferPercent: number;
   assumptions?: string;
   risks?: string;
+  totalHours: number;
+  bufferPercent: number;
+  items: EstimateItem[];
   createdAt: string;
 }
 
-// Added MonthlyReport interface for generated reports
+// Added MonthlyReport for storing generated insights
 export interface MonthlyReport {
   id: string;
   month: string;
