@@ -12,6 +12,7 @@ const Projects: React.FC = () => {
   const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
   const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 10));
   const [status, setStatus] = useState<ProjectStatus>('On-going');
+  const [estimatedHours, setEstimatedHours] = useState<string>(''); // New state for estimation
 
   // Custom picker state
   const [activePicker, setActivePicker] = useState<'start' | 'end' | null>(null);
@@ -35,12 +36,15 @@ const Projects: React.FC = () => {
     setStartDate(new Date().toISOString().slice(0, 10));
     setEndDate(new Date().toISOString().slice(0, 10));
     setStatus('On-going');
+    setEstimatedHours('');
     setEditingId(null);
   };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name) return;
+
+    const estHoursValue = estimatedHours === '' ? undefined : parseFloat(estimatedHours);
 
     if (editingId) {
       const updatedProject: Project = {
@@ -50,6 +54,7 @@ const Projects: React.FC = () => {
         startDate,
         endDate,
         status,
+        estimatedHours: estHoursValue,
         createdAt: projects.find(p => p.id === editingId)?.createdAt || new Date().toISOString(),
       };
       DB.updateProject(updatedProject);
@@ -62,6 +67,7 @@ const Projects: React.FC = () => {
         startDate,
         endDate,
         status,
+        estimatedHours: estHoursValue,
         createdAt: new Date().toISOString(),
       };
       DB.saveProject(newProject);
@@ -78,6 +84,7 @@ const Projects: React.FC = () => {
     setStartDate(p.startDate);
     setEndDate(p.endDate);
     setStatus(p.status);
+    setEstimatedHours(p.estimatedHours?.toString() || '');
   };
 
   const handleDelete = (id: string, e: React.MouseEvent) => {
@@ -165,6 +172,17 @@ const Projects: React.FC = () => {
                 className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 font-bold"
               />
             </div>
+
+            <div>
+              <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-[0.1em]">Estimated Hours (Total)</label>
+              <input
+                type="number"
+                value={estimatedHours}
+                onChange={(e) => setEstimatedHours(e.target.value)}
+                placeholder="e.g. 150"
+                className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 font-bold"
+              />
+            </div>
             
             <div className="grid grid-cols-1 gap-4">
               <div className="relative" ref={activePicker === 'start' ? pickerRef : null}>
@@ -174,7 +192,7 @@ const Projects: React.FC = () => {
                   className="w-full px-5 py-4 rounded-2xl bg-slate-50 flex items-center justify-between cursor-pointer font-bold text-slate-900"
                 >
                   <span>{startDate}</span>
-                  <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg>
                 </div>
                 {activePicker === 'start' && renderCalendar('start')}
               </div>
@@ -185,7 +203,7 @@ const Projects: React.FC = () => {
                   className="w-full px-5 py-4 rounded-2xl bg-slate-50 flex items-center justify-between cursor-pointer font-bold text-slate-900"
                 >
                   <span>{endDate}</span>
-                  <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg>
                 </div>
                 {activePicker === 'end' && renderCalendar('end')}
               </div>
@@ -272,10 +290,20 @@ const Projects: React.FC = () => {
                     </div>
                   </div>
                   <h4 className="font-black text-slate-900 uppercase tracking-tight text-lg mb-2 line-clamp-1">{p.name}</h4>
-                  <div className="flex items-center text-[10px] font-bold text-slate-400 bg-white w-fit px-2 py-1 rounded-lg shadow-xs border border-slate-50">
-                    <svg className="w-3 h-3 mr-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                    {p.startDate} — {p.endDate}
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center text-[10px] font-bold text-slate-400 bg-white w-fit px-2 py-1 rounded-lg shadow-xs border border-slate-50">
+                      <svg className="w-3 h-3 mr-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                      {p.startDate} — {p.endDate}
+                    </div>
+
+                    {p.estimatedHours && (
+                      <div className="flex items-center text-[10px] font-black text-blue-600 bg-blue-50 w-fit px-2 py-1 rounded-lg shadow-xs border border-blue-100">
+                        EST: {p.estimatedHours} Hr
+                      </div>
+                    )}
                   </div>
+
                   {p.description && <p className="text-xs text-slate-500 mt-4 line-clamp-2 leading-relaxed font-medium">{p.description}</p>}
                 </div>
               </div>

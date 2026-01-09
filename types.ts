@@ -14,6 +14,7 @@ export interface Project {
   startDate: string; // YYYY-MM-DD
   endDate: string;   // YYYY-MM-DD
   status: ProjectStatus;
+  estimatedHours?: number; // Added project-level estimated hours
   createdAt: string;
 }
 

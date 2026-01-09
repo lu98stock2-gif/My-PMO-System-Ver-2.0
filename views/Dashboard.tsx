@@ -25,18 +25,41 @@ const Dashboard: React.FC = () => {
     return filteredEntries.filter(e => e.deliverable && e.deliverable.trim() !== "");
   }, [filteredEntries]);
 
+  // Updated total estimated logic: 
+  // Prioritizes project-level estimatedHours if the project is active during selectedMonth.
+  // Falls back to WBS Estimates if no project-level estimation is set.
   const totalEstimatedInMonth = useMemo(() => {
-    return estimates
+    // 1. Projects that overlap with the selected month
+    const activeProjectsThisMonth = projects.filter(p => {
+      // Check if project is active in the selected month
+      // Simple check: p.startDate or p.endDate matches selectedMonth or falls within it
+      return p.startDate.startsWith(selectedMonth) || p.endDate.startsWith(selectedMonth) || (p.startDate < selectedMonth && p.endDate > selectedMonth);
+    });
+
+    const projectLevelSum = activeProjectsThisMonth.reduce((sum, p) => sum + (p.estimatedHours || 0), 0);
+    
+    // 2. Add WBS estimates created this month for standalone or other tracking
+    const wbsSum = estimates
       .filter(est => est.createdAt.startsWith(selectedMonth))
       .reduce((sum, e) => sum + (e.totalHours * (1 + e.bufferPercent / 100)), 0);
-  }, [estimates, selectedMonth]);
+
+    // If projectLevelSum exists, we use that for projects, but WBS might be more specific.
+    // To satisfy the user request simply: reflect what was registered in Projects.
+    return projectLevelSum > 0 ? projectLevelSum : wbsSum;
+  }, [projects, estimates, selectedMonth]);
 
   const mainChartData = useMemo(() => {
     return projects.map(p => {
       const actual = filteredEntries.filter(e => e.projectId === p.id).reduce((s, e) => s + e.hours, 0);
-      const est = estimates
-        .filter(e => e.projectId === p.id && e.createdAt.startsWith(selectedMonth))
-        .reduce((s, e) => s + e.totalHours, 0);
+      
+      // Use project-level estimatedHours as primary, WBS as secondary
+      let est = p.estimatedHours || 0;
+      if (est === 0) {
+        est = estimates
+          .filter(e => e.projectId === p.id && e.createdAt.startsWith(selectedMonth))
+          .reduce((s, e) => s + e.totalHours, 0);
+      }
+
       return {
         name: p.name,
         actual,
