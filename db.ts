@@ -29,15 +29,10 @@ export const DB = {
     save(STORAGE_KEYS.PROJECTS, list);
   },
   deleteProject: (id: string) => {
-    // Delete the project
     const list = DB.getProjects().filter(p => p.id !== id);
     save(STORAGE_KEYS.PROJECTS, list);
-    
-    // Cascading delete: Remove associated time entries
     const entries = DB.getTimeEntries().filter(e => e.projectId !== id);
     save(STORAGE_KEYS.TIME_ENTRIES, entries);
-
-    // Cascading delete: Remove associated estimates
     const estimates = DB.getEstimates().filter(e => e.projectId !== id);
     save(STORAGE_KEYS.ESTIMATES, estimates);
   },
@@ -74,14 +69,49 @@ export const DB = {
 
   // Reports
   getReports: (): MonthlyReport[] => get<MonthlyReport>(STORAGE_KEYS.REPORTS),
-  // Fix: Completed truncated function and corrected property access to REPORTS
   saveReport: (report: MonthlyReport) => {
     const list = DB.getReports();
     save(STORAGE_KEYS.REPORTS, [...list, report]);
   },
-  // Fix: Added missing deleteReport method to complete the DB service
   deleteReport: (id: string) => {
     const list = DB.getReports().filter(r => r.id !== id);
     save(STORAGE_KEYS.REPORTS, list);
   },
+
+  // Backup & Restore
+  exportData: () => {
+    const data = {
+      projects: DB.getProjects(),
+      estimates: DB.getEstimates(),
+      timeEntries: DB.getTimeEntries(),
+      reports: DB.getReports(),
+      // Also include daily memos stored separately in localStorage
+      memos: Object.keys(localStorage)
+        .filter(key => key.startsWith('daily_memo_'))
+        .reduce((acc, key) => {
+          acc[key] = localStorage.getItem(key);
+          return acc;
+        }, {} as Record<string, string | null>)
+    };
+    return JSON.stringify(data, null, 2);
+  },
+
+  importData: (jsonString: string) => {
+    try {
+      const data = JSON.parse(jsonString);
+      if (data.projects) save(STORAGE_KEYS.PROJECTS, data.projects);
+      if (data.estimates) save(STORAGE_KEYS.ESTIMATES, data.estimates);
+      if (data.timeEntries) save(STORAGE_KEYS.TIME_ENTRIES, data.timeEntries);
+      if (data.reports) save(STORAGE_KEYS.REPORTS, data.reports);
+      if (data.memos) {
+        Object.entries(data.memos).forEach(([key, value]) => {
+          if (value !== null) localStorage.setItem(key, value as string);
+        });
+      }
+      return true;
+    } catch (e) {
+      console.error("Failed to import data:", e);
+      return false;
+    }
+  }
 };

@@ -4,16 +4,15 @@ import { DB } from '../db';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
 const Dashboard: React.FC = () => {
-  // Use local time for the current month (YYYY-MM)
   const [selectedMonth, setSelectedMonth] = useState(new Date().toLocaleDateString('sv').slice(0, 7));
   const [showPicker, setShowPicker] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const projects = useMemo(() => DB.getProjects(), []);
   const estimates = useMemo(() => DB.getEstimates(), []);
   const timeEntries = useMemo(() => DB.getTimeEntries(), []);
 
-  // Filter data by selected month
   const filteredEntries = useMemo(() => {
     return timeEntries.filter(e => e.date.startsWith(selectedMonth));
   }, [timeEntries, selectedMonth]);
@@ -30,32 +29,23 @@ const Dashboard: React.FC = () => {
     const activeProjectsThisMonth = projects.filter(p => {
       return p.startDate.startsWith(selectedMonth) || p.endDate.startsWith(selectedMonth) || (p.startDate < selectedMonth && p.endDate > selectedMonth);
     });
-
     const projectLevelSum = activeProjectsThisMonth.reduce((sum, p) => sum + (p.estimatedHours || 0), 0);
-    
     const wbsSum = estimates
       .filter(est => est.createdAt.startsWith(selectedMonth))
       .reduce((sum, e) => sum + (e.totalHours * (1 + e.bufferPercent / 100)), 0);
-
     return projectLevelSum > 0 ? projectLevelSum : wbsSum;
   }, [projects, estimates, selectedMonth]);
 
   const mainChartData = useMemo(() => {
     return projects.map(p => {
       const actual = filteredEntries.filter(e => e.projectId === p.id).reduce((s, e) => s + e.hours, 0);
-      
       let est = p.estimatedHours || 0;
       if (est === 0) {
         est = estimates
           .filter(e => e.projectId === p.id && e.createdAt.startsWith(selectedMonth))
           .reduce((s, e) => s + e.totalHours, 0);
       }
-
-      return {
-        name: p.name,
-        actual,
-        estimated: est || 0,
-      };
+      return { name: p.name, actual, estimated: est || 0 };
     }).filter(d => d.actual > 0 || d.estimated > 0).slice(0, 10);
   }, [projects, filteredEntries, estimates, selectedMonth]);
 
@@ -86,23 +76,17 @@ const Dashboard: React.FC = () => {
   const adjustMonth = (delta: number) => {
     const [year, month] = selectedMonth.split('-').map(Number);
     const date = new Date(year, month - 1 + delta, 1);
-    const newY = date.getFullYear();
-    const newM = String(date.getMonth() + 1).padStart(2, '0');
-    setSelectedMonth(`${newY}-${newM}`);
+    setSelectedMonth(`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`);
   };
 
   const adjustYear = (delta: number) => {
     const [year, month] = selectedMonth.split('-').map(Number);
-    const newY = year + delta;
-    const newM = String(month).padStart(2, '0');
-    setSelectedMonth(`${newY}-${newM}`);
+    setSelectedMonth(`${year + delta}-${String(month).padStart(2, '0')}`);
   };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
-        setShowPicker(false);
-      }
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) setShowPicker(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -112,6 +96,35 @@ const Dashboard: React.FC = () => {
     const [year, month] = monthStr.split('-');
     const date = new Date(Number(year), Number(month) - 1);
     return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+  };
+
+  const handleDownloadBackup = () => {
+    const data = DB.exportData();
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pm_hub_backup_${new Date().toLocaleDateString('sv')}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleUploadBackup = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      if (DB.importData(content)) {
+        alert("Backup restored successfully. The page will now reload.");
+        window.location.reload();
+      } else {
+        alert("Failed to restore backup. Invalid file format.");
+      }
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -132,17 +145,12 @@ const Dashboard: React.FC = () => {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
               </button>
             </div>
-            
-            <div 
-              className="flex items-center space-x-2 md:space-x-3 group cursor-pointer" 
-              onClick={() => setShowPicker(!showPicker)}
-            >
+            <div className="flex items-center space-x-2 md:space-x-3 group cursor-pointer" onClick={() => setShowPicker(!showPicker)}>
               <div className="p-1.5 md:p-2 bg-blue-50 rounded-xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
                 <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg>
               </div>
               <span className="font-black text-slate-900 tracking-tight text-base md:text-lg min-w-[100px] md:min-w-[140px] text-center truncate">{getMonthName(selectedMonth)}</span>
             </div>
-
             <div className="flex items-center space-x-1 border-l border-slate-100 pl-3 ml-3">
               <button onClick={() => adjustMonth(1)} className="p-1 text-slate-400 hover:text-blue-600 transition-colors" title="Next Month">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
@@ -152,7 +160,6 @@ const Dashboard: React.FC = () => {
               </button>
             </div>
           </div>
-          
           {showPicker && (
             <div ref={pickerRef} className="absolute right-0 top-full mt-4 z-50 bg-white border border-slate-100 shadow-2xl rounded-3xl p-4 w-64 animate-fadeIn">
                <div className="grid grid-cols-3 gap-2">
@@ -161,18 +168,7 @@ const Dashboard: React.FC = () => {
                    const [year] = selectedMonth.split('-');
                    const currentM = `${year}-${m}`;
                    return (
-                     <button
-                       key={i}
-                       onClick={() => {
-                         setSelectedMonth(currentM);
-                         setShowPicker(false);
-                       }}
-                       className={`py-2 rounded-xl text-xs font-bold transition-all ${
-                         selectedMonth === currentM ? 'bg-blue-600 text-white shadow-lg' : 'hover:bg-blue-50 text-slate-700'
-                       }`}
-                     >
-                       {new Date(2000, i).toLocaleString('default', { month: 'short' })}
-                     </button>
+                     <button key={i} onClick={() => { setSelectedMonth(currentM); setShowPicker(false); }} className={`py-2 rounded-xl text-xs font-bold transition-all ${selectedMonth === currentM ? 'bg-blue-600 text-white shadow-lg' : 'hover:bg-blue-50 text-slate-700'}`}>{new Date(2000, i).toLocaleString('default', { month: 'short' })}</button>
                    );
                  })}
                </div>
@@ -181,7 +177,6 @@ const Dashboard: React.FC = () => {
         </div>
       </header>
 
-      {/* Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
         {[
           { label: 'ACTUAL HOURS (MONTH)', value: monthTotalHours, unit: 'h', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', color: 'blue' },
@@ -190,25 +185,17 @@ const Dashboard: React.FC = () => {
         ].map((item, idx) => (
           <div key={idx} className="bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300">
             <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-${item.color}-50 flex items-center justify-center text-${item.color}-600 mb-4 md:mb-6`}>
-              <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
-              </svg>
+              <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} /></svg>
             </div>
             <p className="text-[9px] md:text-[10px] font-black text-slate-400 tracking-widest mb-1 uppercase">{item.label}</p>
-            <p className="text-3xl md:text-4xl font-black text-slate-900">
-              {item.value}
-              <span className="text-lg md:text-xl text-slate-300 font-black ml-2 md:ml-4">{item.unit}</span>
-            </p>
+            <p className="text-3xl md:text-4xl font-black text-slate-900">{item.value}<span className="text-lg md:text-xl text-slate-300 font-black ml-2 md:ml-4">{item.unit}</span></p>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 md:gap-8">
         <div className="xl:col-span-3 bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-          <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6 md:mb-8 flex items-center">
-            <span className="w-1.5 h-5 md:h-6 bg-blue-600 rounded-full mr-3"></span>
-            Actual vs Estimated
-          </h3>
+          <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6 md:mb-8 flex items-center"><span className="w-1.5 h-5 md:h-6 bg-blue-600 rounded-full mr-3"></span>Actual vs Estimated</h3>
           <div className="h-[300px] md:h-[450px] -mx-4 md:mx-0">
             {mainChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
@@ -216,10 +203,7 @@ const Dashboard: React.FC = () => {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10, fontWeight: 600 }} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10 }} />
-                  <Tooltip 
-                    cursor={{ fill: '#f8fafc' }}
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                  />
+                  <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
                   <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '10px' }} />
                   <Bar name="Actual" dataKey="actual" fill="#2563eb" radius={[4, 4, 0, 0]} barSize={30} />
                   <Bar name="Estimated" dataKey="estimated" fill="#e2e8f0" radius={[4, 4, 0, 0]} barSize={30} />
@@ -230,7 +214,6 @@ const Dashboard: React.FC = () => {
             )}
           </div>
         </div>
-
         <div className="bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm flex flex-col h-fit md:h-auto">
           <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6">On-going Project</h3>
           <div className="space-y-4 overflow-y-auto max-h-[300px] md:max-h-none md:flex-1 custom-scrollbar">
@@ -251,30 +234,15 @@ const Dashboard: React.FC = () => {
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8">
         <div className="bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-          <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6 flex items-center">
-            <span className="w-1.5 h-5 md:h-6 bg-emerald-500 rounded-full mr-3"></span>
-            Hours By Project
-          </h3>
+          <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6 flex items-center"><span className="w-1.5 h-5 md:h-6 bg-emerald-500 rounded-full mr-3"></span>Hours By Project</h3>
           <div className="h-72 md:h-96 -mx-4 md:mx-0">
             {projectHoursData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart margin={{ top: 20 }}>
-                  <Pie
-                    data={projectHoursData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={8}
-                    dataKey="value"
-                    label={({name, percent}) => `${name.substring(0,6)}... (${(percent * 100).toFixed(0)}%)`}
-                  >
-                    {projectHoursData.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
+                  <Pie data={projectHoursData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={8} dataKey="value" label={({name, percent}) => `${name.substring(0,6)}... (${(percent * 100).toFixed(0)}%)`}>
+                    {projectHoursData.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                   </Pie>
-                  <Tooltip />
-                  <Legend wrapperStyle={{ fontSize: '10px' }} />
+                  <Tooltip /><Legend wrapperStyle={{ fontSize: '10px' }} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -282,32 +250,16 @@ const Dashboard: React.FC = () => {
             )}
           </div>
         </div>
-
         <div className="bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-          <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6 flex items-center">
-            <span className="w-1.5 h-5 md:h-6 bg-purple-500 rounded-full mr-3"></span>
-            Task Type Distribution
-          </h3>
+          <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6 flex items-center"><span className="w-1.5 h-5 md:h-6 bg-purple-500 rounded-full mr-3"></span>Task Type Distribution</h3>
           <div className="h-72 md:h-96 -mx-4 md:mx-0">
             {taskTypeData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart margin={{ top: 20 }}>
-                  <Pie
-                    data={taskTypeData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={8}
-                    dataKey="value"
-                    label={({name, percent}) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                  >
-                    {taskTypeData.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[(index + 3) % COLORS.length]} />
-                    ))}
+                  <Pie data={taskTypeData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={8} dataKey="value" label={({name, percent}) => `${name} (${(percent * 100).toFixed(0)}%)`}>
+                    {taskTypeData.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[(index + 3) % COLORS.length]} />)}
                   </Pie>
-                  <Tooltip />
-                  <Legend wrapperStyle={{ fontSize: '10px' }} />
+                  <Tooltip /><Legend wrapperStyle={{ fontSize: '10px' }} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -317,31 +269,42 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+      {/* Data Management Section */}
+      <section className="bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm">
         <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6 flex items-center">
-          <span className="w-1.5 h-5 md:h-6 bg-blue-600 rounded-full mr-3"></span>
-          Deliverables this Month
+          <span className="w-1.5 h-5 md:h-6 bg-slate-400 rounded-full mr-3"></span>
+          Data Management
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {deliverablesThisMonth.length === 0 && (
-            <div className="col-span-full py-10 md:py-20 flex flex-col items-center justify-center text-slate-300">
-               <p className="text-sm">No deliverables recorded for {getMonthName(selectedMonth)}.</p>
-            </div>
-          )}
-          {deliverablesThisMonth.map((e, idx) => (
-            <div key={idx} className="p-4 rounded-xl border border-slate-50 bg-slate-50/50 flex flex-col justify-between hover:border-blue-200 transition-all group">
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[8px] md:text-[9px] font-black text-blue-600 uppercase tracking-widest truncate max-w-[60%]">{projects.find(p => p.id === e.projectId)?.name}</span>
-                  <span className="text-[8px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest">{e.date}</span>
-                </div>
-                <h4 className="font-bold text-slate-900 text-xs md:text-sm mb-1 group-hover:text-blue-700 transition-colors line-clamp-1">{e.deliverable}</h4>
-                <p className="text-[10px] text-slate-500 line-clamp-1">{e.taskName}</p>
-              </div>
-            </div>
-          ))}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <button 
+            onClick={handleDownloadBackup}
+            className="flex-1 flex items-center justify-center space-x-3 px-6 py-4 bg-slate-900 text-white rounded-xl hover:bg-black transition-all font-bold text-sm"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+            <span>Download Backup</span>
+          </button>
+          
+          <div className="flex-1">
+            <input 
+              type="file" 
+              accept=".json" 
+              ref={fileInputRef} 
+              onChange={handleUploadBackup} 
+              className="hidden" 
+            />
+            <button 
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full flex items-center justify-center space-x-3 px-6 py-4 bg-white border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition-all font-bold text-sm"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+              <span>Upload Backup</span>
+            </button>
+          </div>
         </div>
-      </div>
+        <p className="mt-4 text-[10px] text-slate-400 font-medium uppercase tracking-widest text-center sm:text-left">
+          Note: Uploading a backup will replace your current application data.
+        </p>
+      </section>
     </div>
   );
 };
