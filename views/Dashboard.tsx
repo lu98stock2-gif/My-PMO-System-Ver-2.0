@@ -6,6 +6,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 const Dashboard: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().toLocaleDateString('sv').slice(0, 7));
   const [showPicker, setShowPicker] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -104,7 +105,7 @@ const Dashboard: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `pm_hub_backup_${new Date().toLocaleDateString('sv')}.json`;
+    a.download = `pm_hub_full_backup_${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -114,34 +115,39 @@ const Dashboard: React.FC = () => {
   const handleUploadBackup = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    
+    setIsProcessing(true);
     const reader = new FileReader();
     reader.onload = (e) => {
       const content = e.target?.result as string;
-      if (DB.importData(content)) {
-        alert("Backup restored successfully. The page will now reload.");
-        window.location.reload();
-      } else {
-        alert("Failed to restore backup. Invalid file format.");
-      }
+      setTimeout(() => { // Small timeout to let UI show processing state
+        if (DB.importData(content)) {
+          alert("Backup restored successfully. The system will refresh.");
+          window.location.reload();
+        } else {
+          alert("Failed to restore backup. Please ensure the file is a valid Hub backup.");
+          setIsProcessing(false);
+        }
+      }, 500);
     };
     reader.readAsText(file);
   };
 
   return (
-    <div className="space-y-6 md:space-y-8 animate-fadeIn w-full max-w-none px-0 md:px-4 pb-10 md:pb-20">
+    <div className="space-y-6 md:space-y-8 animate-fadeIn w-full max-w-none px-0 md:px-4 pb-12 md:pb-20">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
+        <div className="text-center md:text-left">
           <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight">Dashboard</h2>
           <p className="text-sm md:text-base text-slate-500 font-medium">Monthly performance and project insights.</p>
         </div>
         
         <div className="relative">
-          <div className="flex items-center justify-between bg-white px-4 md:px-5 py-3 rounded-2xl border border-slate-100 shadow-sm">
-            <div className="flex items-center space-x-1 border-r border-slate-100 pr-3 mr-3">
-              <button onClick={() => adjustYear(-1)} className="p-1 text-slate-400 hover:text-blue-600 transition-colors" title="Previous Year">
+          <div className="flex items-center justify-between bg-white px-3 md:px-5 py-3 rounded-2xl border border-slate-100 shadow-sm">
+            <div className="flex items-center space-x-1 border-r border-slate-100 pr-2 md:pr-3 mr-2 md:mr-3">
+              <button onClick={() => adjustYear(-1)} className="p-1 text-slate-400 hover:text-blue-600 transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M11 19l-7-7 7-7" /></svg>
               </button>
-              <button onClick={() => adjustMonth(-1)} className="p-1 text-slate-400 hover:text-blue-600 transition-colors" title="Previous Month">
+              <button onClick={() => adjustMonth(-1)} className="p-1 text-slate-400 hover:text-blue-600 transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
               </button>
             </div>
@@ -149,13 +155,13 @@ const Dashboard: React.FC = () => {
               <div className="p-1.5 md:p-2 bg-blue-50 rounded-xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
                 <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg>
               </div>
-              <span className="font-black text-slate-900 tracking-tight text-base md:text-lg min-w-[100px] md:min-w-[140px] text-center truncate">{getMonthName(selectedMonth)}</span>
+              <span className="font-black text-slate-900 tracking-tight text-sm md:text-lg min-w-[90px] md:min-w-[140px] text-center truncate">{getMonthName(selectedMonth)}</span>
             </div>
-            <div className="flex items-center space-x-1 border-l border-slate-100 pl-3 ml-3">
-              <button onClick={() => adjustMonth(1)} className="p-1 text-slate-400 hover:text-blue-600 transition-colors" title="Next Month">
+            <div className="flex items-center space-x-1 border-l border-slate-100 pl-2 md:pl-3 ml-2 md:ml-3">
+              <button onClick={() => adjustMonth(1)} className="p-1 text-slate-400 hover:text-blue-600 transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
               </button>
-              <button onClick={() => adjustYear(1)} className="p-1 text-slate-400 hover:text-blue-600 transition-colors" title="Next Year">
+              <button onClick={() => adjustYear(1)} className="p-1 text-slate-400 hover:text-blue-600 transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 5l7 7-7 7" /></svg>
               </button>
             </div>
@@ -177,6 +183,7 @@ const Dashboard: React.FC = () => {
         </div>
       </header>
 
+      {/* Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
         {[
           { label: 'ACTUAL HOURS (MONTH)', value: monthTotalHours, unit: 'h', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', color: 'blue' },
@@ -194,9 +201,9 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 md:gap-8">
-        <div className="xl:col-span-3 bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="xl:col-span-3 bg-white p-4 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
           <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6 md:mb-8 flex items-center"><span className="w-1.5 h-5 md:h-6 bg-blue-600 rounded-full mr-3"></span>Actual vs Estimated</h3>
-          <div className="h-[300px] md:h-[450px] -mx-4 md:mx-0">
+          <div className="h-[250px] md:h-[450px] -mx-4 md:mx-0">
             {mainChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={mainChartData} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
@@ -205,8 +212,8 @@ const Dashboard: React.FC = () => {
                   <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10 }} />
                   <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
                   <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '10px' }} />
-                  <Bar name="Actual" dataKey="actual" fill="#2563eb" radius={[4, 4, 0, 0]} barSize={30} />
-                  <Bar name="Estimated" dataKey="estimated" fill="#e2e8f0" radius={[4, 4, 0, 0]} barSize={30} />
+                  <Bar name="Actual" dataKey="actual" fill="#2563eb" radius={[4, 4, 0, 0]} barSize={25} />
+                  <Bar name="Estimated" dataKey="estimated" fill="#e2e8f0" radius={[4, 4, 0, 0]} barSize={25} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
@@ -215,7 +222,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
         <div className="bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm flex flex-col h-fit md:h-auto">
-          <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6">On-going Project</h3>
+          <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6">On-going Projects</h3>
           <div className="space-y-4 overflow-y-auto max-h-[300px] md:max-h-none md:flex-1 custom-scrollbar">
             {inProgressProjects.length === 0 && <p className="text-slate-400 text-sm italic">No on-going projects found.</p>}
             {inProgressProjects.map(p => (
@@ -232,59 +239,30 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8">
-        <div className="bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-          <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6 flex items-center"><span className="w-1.5 h-5 md:h-6 bg-emerald-500 rounded-full mr-3"></span>Hours By Project</h3>
-          <div className="h-72 md:h-96 -mx-4 md:mx-0">
-            {projectHoursData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart margin={{ top: 20 }}>
-                  <Pie data={projectHoursData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={8} dataKey="value" label={({name, percent}) => `${name.substring(0,6)}... (${(percent * 100).toFixed(0)}%)`}>
-                    {projectHoursData.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-                  </Pie>
-                  <Tooltip /><Legend wrapperStyle={{ fontSize: '10px' }} />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full flex items-center justify-center text-slate-300 text-sm">No activity this month.</div>
-            )}
-          </div>
-        </div>
-        <div className="bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-          <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6 flex items-center"><span className="w-1.5 h-5 md:h-6 bg-purple-500 rounded-full mr-3"></span>Task Type Distribution</h3>
-          <div className="h-72 md:h-96 -mx-4 md:mx-0">
-            {taskTypeData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart margin={{ top: 20 }}>
-                  <Pie data={taskTypeData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={8} dataKey="value" label={({name, percent}) => `${name} (${(percent * 100).toFixed(0)}%)`}>
-                    {taskTypeData.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[(index + 3) % COLORS.length]} />)}
-                  </Pie>
-                  <Tooltip /><Legend wrapperStyle={{ fontSize: '10px' }} />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full flex items-center justify-center text-slate-300 text-sm">No task types recorded.</div>
-            )}
-          </div>
-        </div>
-      </div>
-
       {/* Data Management Section */}
-      <section className="bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm">
+      <section className="bg-white p-6 md:p-10 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden">
+        {isProcessing && (
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center space-y-4">
+             <div className="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
+             <p className="font-black text-slate-900 text-sm uppercase tracking-widest">Processing Data...</p>
+          </div>
+        )}
+        
         <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-6 flex items-center">
           <span className="w-1.5 h-5 md:h-6 bg-slate-400 rounded-full mr-3"></span>
           Data Management
         </h3>
-        <div className="flex flex-col sm:flex-row gap-4">
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <button 
             onClick={handleDownloadBackup}
-            className="flex-1 flex items-center justify-center space-x-3 px-6 py-4 bg-slate-900 text-white rounded-xl hover:bg-black transition-all font-bold text-sm"
+            className="flex items-center justify-center space-x-3 px-6 py-4 bg-slate-900 text-white rounded-xl hover:bg-black transition-all font-bold text-sm shadow-xl shadow-slate-100"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-            <span>Download Backup</span>
+            <span className="uppercase tracking-widest text-[11px]">Download System Backup</span>
           </button>
           
-          <div className="flex-1">
+          <div className="relative">
             <input 
               type="file" 
               accept=".json" 
@@ -297,13 +275,10 @@ const Dashboard: React.FC = () => {
               className="w-full flex items-center justify-center space-x-3 px-6 py-4 bg-white border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition-all font-bold text-sm"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-              <span>Upload Backup</span>
+              <span className="uppercase tracking-widest text-[11px]">Restore from Backup</span>
             </button>
           </div>
         </div>
-        <p className="mt-4 text-[10px] text-slate-400 font-medium uppercase tracking-widest text-center sm:text-left">
-          Note: Uploading a backup will replace your current application data.
-        </p>
       </section>
     </div>
   );

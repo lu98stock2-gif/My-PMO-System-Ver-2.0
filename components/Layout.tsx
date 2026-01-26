@@ -3,7 +3,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children: React.Node;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
